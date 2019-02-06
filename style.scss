@@ -16,10 +16,23 @@ p {
   font-family: sans-serif;
 }
 
+.char-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
 .content {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
+}
+
+.search-bar {
+  position: absolute;
+  top: 0.5rem;
+  right: 2rem;
 }
 
 .character-card {

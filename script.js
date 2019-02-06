@@ -77,19 +77,27 @@ characterTemplate.setAttribute('data-toggle', 'modal');
 characterTemplate.classList = 'character-card';
 
 const content = document.querySelector('.content');
+let charContainer = document.querySelector('.char-container');
 
-
+let dbCharacters;
+let characters;
 (async function loadChars(){
-  let characters;
   do {
     try {
-      characters = await axios.get('https://character-database.becode.xyz/characters');
+      let response = await axios.get('https://character-database.becode.xyz/characters');
+      dbCharacters = response.data;
     } catch(error){
       console.log(error);
     }
-  } while(!characters);
-  for(let i = 0; i < characters.data.length; i++){
-    let character = characters.data[i];
+  } while(!dbCharacters);
+  characters = [...dbCharacters];
+  refreshDisplay();
+})();
+
+function refreshDisplay(){
+  charContainer.innerHTML = '';
+  for(let i = 0; i < characters.length; i++){
+    let character = characters[i];
     let characterNode = characterTemplate.cloneNode(true);
 
     let name = document.createElement('h3');
@@ -156,12 +164,12 @@ const content = document.querySelector('.content');
     });
     characterNode.appendChild(deleteButton);
 
-    content.insertBefore(characterNode, content.querySelector('#add-char-card'));
-    content.appendChild(infoModal);
-    content.appendChild(editModal);
-    content.appendChild(deleteModal);
+    charContainer.appendChild(characterNode);
+    charContainer.appendChild(infoModal);
+    charContainer.appendChild(editModal);
+    charContainer.appendChild(deleteModal);
   }
-})();
+}
 
 
 const submitButton = document.querySelector('.add-char-btn');
@@ -231,4 +239,20 @@ function deleteChar(charId){
       window.location.reload();
     })
     .catch((error) => console.log(error));
+}
+
+let search = document.querySelector('.search-bar');
+search.addEventListener('input', () => {
+  filterCharacters(search.value);
+});
+
+function filterCharacters(queryString){
+  queryString = queryString.toLowerCase()
+  characters = dbCharacters.filter((char) => {
+    return char.name.toLowerCase().includes(queryString) ||
+           char.description.toLowerCase().includes(queryString) ||
+           char.shortDescription.toLowerCase().includes(queryString);
+
+  });
+  refreshDisplay();
 }
